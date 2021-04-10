@@ -7,13 +7,2078 @@
     <title>Weather</title>
     <link rel="stylesheet" href="style/beauty-others.css">
     <script type="text/javascript" src="http://i.tq121.com.cn/j/jquery-1.8.2.js"></script>
-    <script type="text/javascript" src="js/huangli.js"></script>
-    <script type="text/javascript" src="js/raphael.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
     <script type="text/javascript" src="https://j.i8tq.com/weather2020/search/city.js"></script>
     <script type="text/javascript" src="http://i.tq121.com.cn/j/weather2017/jquery.nicescroll.min.js"></script>
-    <link rel="stylesheet" href="style/beauty.css">
     <link rel="shortcut icon" href="https://iconfont.alicdn.com/s/aeb33dcf-5714-45f1-8d40-af4f66249308_origin.svg"
         type="image/x-icon">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    --end-color: transparent;
+    background-image: linear-gradient(to bottom, #eee 60%, var(--end-color) 100%);
+    transition: --end-color 2.3s;
+    -webkit-transition: --end-color 2.3s;
+}
+.title {
+    margin: 0 auto;
+    margin-top: 25px;
+    margin-bottom: 8px;
+    /* border: 1px solid #ccc; */
+}
+.inner-title {
+    overflow: hidden;
+    width: 172.09px;
+    /* border: 1px solid #ccc; */
+    margin: 0 auto;
+}
+.title>div>ul>li {
+    font-size: 40px;
+    font-weight: bold;
+    float: left;
+    list-style-type: none;
+}
+.out-wrapper, .detail-box {
+    border: 1px solid #ccc;
+    background-color: #f4f9f9;
+    border-radius: 23px;
+    margin: 10px auto;
+    margin-bottom: 80px;
+    width: 75%;
+    height: 550px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 1px;
+}
+.search {
+    position: absolute;
+    margin: 0 auto;
+    left: 50%;
+    top: 6%;
+    margin-left: -100px;
+}
+.search input {
+    width: 200px;
+    height: 32px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    padding: 0 1em;
+    padding-right: 2.5em;
+}
+.search input:focus, .search input:hover {
+    outline: none;
+    border-color: gray;
+}
+.search img {
+    position: absolute;
+    width: 32px;
+    left: 50%;
+    margin-left: 65px;
+    opacity: 0.5;
+}
+.search img:hover {
+    opacity: 1;
+}
+/* Scrolling Setting */
+/* ::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+}
+::-webkit-scrollbar {
+    height: 8px;
+    scrollbar-width: 30px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, transparent, rgba(200, 200, 200, 0.5));
+    background-clip: padding-box;
+    border-radius: 20px;
+    max-width: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    cursor: pointer;
+    background: linear-gradient(to right, transparent, rgba(200, 200, 200, 1));
+} */
+.weather-boxes-window {
+    position: absolute;
+    top: 18%;
+    left: 3%;
+    padding-bottom: 35px;
+    width: 94%;
+    overflow: hidden;
+    user-select: none;
+}
+.weather-boxes {
+    width: 1620px;
+    overflow: hidden;
+    height: 100%;
+    padding-top: 6px;
+}
+#curveTop {
+    position: absolute;
+    margin: 0 auto;
+    width: 1620px;
+    height: 50px;
+    left: 0;
+    top: 140px;
+    pointer-events: none;
+    /* border: 1px solid #ccc; */
+    /* background-color: rgba(136, 130, 130, 0.5); */
+}
+#curveBottom {
+    position: absolute;
+    margin: 0 auto;
+    width: 1620px;
+    height: 50px;
+    left: 0;
+    top: 190px;
+    pointer-events: none;
+    /* border: 1px solid #ccc; */
+    /* background-color: rgba(110, 97, 97, 0.5); */
+}
+.weather-box {
+    width: 230px;
+    height: 380px;
+    float: left;
+    border: 4px solid white;
+    border-radius: 20px;
+    margin: 0 20px;
+    transition: all .23s ease-out;
+    padding: 0;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.weather-box:hover{
+    box-shadow: 0px 1.23px 1.23px 2px rgb(235, 234, 234);
+    transform:translateY(-12px);
+    display: block;
+}
+.weather-info {
+    position: relative;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 78%;
+    width: 100%;
+    background-color: pink;
+    text-align: center;
+    line-height: 2em;
+    padding-top: 1em;
+    color: white;
+    overflow: hidden;
+    /* font-size: 18px; */
+}
+.weather-info .tem {
+    display: flex;
+    height: 36%;
+    align-items: center;
+    justify-content: center;
+}
+.day-info {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    height: 23%;
+    width: 100%;
+    background-color: white;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
+    margin-top: -1%;
+    padding: 4px;
+    z-index: 999;
+}
+.weather-info:hover {
+    background-color: deeppink;
+}
+.weather-info>div {
+    width: 100%;
+    text-align: center;
+    line-height: 2em;
+}
+.week {
+    color: #ccc;
+    font-size: 16px;
+    line-height: 0.5em;
+}
+.day {
+    color: deeppink;
+    font-size: 36px;
+}
+/* 黄历 */
+.almanac-box {
+    position: absolute;
+    border-radius: 14px 14px 0 0;
+    bottom: -100%;
+    height: 0%;
+    width: 100%;
+    margin: auto auto;
+    background-color: white;
+    border: 1px solid white;
+}
+.almanac-box img {
+    width: 44px;
+    height: 44px;
+}
+.almanac-top {
+    color: #ff7272;
+    line-height: 2em;
+    text-align: center;
+    /* border: 1px solid #ccc; */
+}
+.almanac-box>div>h1 {
+    width: 70%;
+    margin: 0 auto;
+    font-size: 18px;
+    text-align: center;
+}
+.almanac-bottom {
+    /* border: 1px solid #ccc; */
+    height: 83%;
+    margin-top: 5%;
+}
+.almanac-bottom>div {
+    float: left;
+    width: 50%;
+    height: 100%;
+    /* border: 1px solid #ccc; */
+}
+.almanac-bottom ul {
+    display: block;
+    height: 75%;
+    /* border: 1px solid #ccc; */
+    overflow-y: scroll;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.almanac-bottom ul::-webkit-scrollbar {
+    display: none;
+}
+.almanac-bottom li {
+    list-style-type: none;
+    color: #fa744f;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 2em;
+}
+.almanac-bottom li:hover {
+    cursor: pointer;
+    background-color: rgba(200, 200, 200, 0.32);
+}
+/* 底部图表 */
+.weather-type ul {
+    height: 50px;
+    width: 40%;
+    margin: 30px auto;
+    display: flex;
+    padding: 0 25px 0 25px;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    background-color: #78c4d4;
+    opacity: 0.5;
+    border-radius: 30px;
+}
+.weather-type li {
+    z-index: 1;
+    font-size: 24px;
+    list-style: none;
+    color: white;
+    /* border: 1px solid red; */
+    display: line-block;
+    text-align: center;
+    line-height: 1em;
+    cursor: pointer;
+}
+.slide {
+    display: none;
+    position: absolute;
+    z-index: 0;
+    height: 2em;
+    background-color: white;
+    border-radius: 30px;
+    opacity: 0.5;
+    filter: opacity(0.5);
+}
+.detail-box {
+    background-color: rgba(255, 255, 255, .23);
+    border: none;
+    margin-top: -60px;
+    height: 440px;
+    padding-bottom: 15px;
+    box-shadow: 0px 0px 6px rgba(204, 204, 204, 0.23);
+}
+#charts {
+    width: 80%;
+    height: 68%;
+    background-color: rgba(255, 255, 255, 0.23);
+    border-radius: 30px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0px 0px 12px rgba(204, 204, 204, 0.23);
+    overflow-y: hidden;
+}
+#charts circle {
+    cursor: pointer;
+}
+#charts circle:hover {
+    animation: big 0.23s forwards;
+}
+@keyframes big {
+    to {
+        r: 8;
+    }
+}
+#charts svg {
+    z-index: 1;
+    pointer-events: none;
+}
+#charts ul {
+    z-index: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    pad: 80 100;
+    height: 100%;
+    align-items: center;  
+}
+#charts ul li{
+    list-style-type: none;
+    font-weight: bold;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    padding-top: 0px;
+    color: white;
+    opacity: 0;
+    border: 1px solid transparent;
+    border-radius: 24px;
+}
+/* 滚动条 */
+.scroll-box {
+    position: absolute; 
+    bottom: 20px;
+    height: 10px; 
+    width: 200px; 
+    border: none; 
+    border-radius: 5px; 
+    left: calc(50% - 100px);
+    background-color: rgba(188, 188, 188, 0.5); 
+}
+.scroll-box {
+    bottom: 20px;
+    height: 10px; 
+    width: 100px; 
+    background-color: rgb(188, 188, 188); 
+    border: none; 
+    background-clip: padding-box; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    left: 45px;
+}
+/* 天气等级 */
+.lv1 {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#0e7fdf,endColorStr=#69b8f0);
+    background: -ms-linear-gradient(top,#0e7fdf,#69b8f0);
+    background: -moz-linear-gradient(top,#0e7fdf,#69b8f0);
+    background: -webkit-gradient(linear,0% 0,0% 100%,from(#0e7fdf),to(#69b8f0));
+    background: -o-linear-gradient(top,#0e7fdf,#69b8f0)
+}
+
+.lv2 {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#50b2fb,endColorStr=#a6d4f6);
+    background: -ms-linear-gradient(top,#50b2fb,#a6d4f6);
+    background: -moz-linear-gradient(top,#50b2fb,#a6d4f6);
+    background: -webkit-gradient(linear,0% 0,0% 100%,from(#50b2fb),to(#a6d4f6));
+    background: -o-linear-gradient(top,#50b2fb,#a6d4f6)
+}
+
+.lv3 {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#88a9ca,endColorStr=#bcd3e3);
+    background: -ms-linear-gradient(top,#88a9ca,#bcd3e3);
+    background: -moz-linear-gradient(top,#88a9ca,#bcd3e3);
+    background: -webkit-gradient(linear,0% 0,0% 100%,from(#88a9ca),to(#bcd3e3));
+    background: -o-linear-gradient(top,#88a9ca,#bcd3e3)
+}
+
+.lv4 {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#999691,endColorStr=#c5c5c5);
+    background: -ms-linear-gradient(top,#999691,#c5c5c5);
+    background: -moz-linear-gradient(top,#999691,#c5c5c5);
+    background: -webkit-gradient(linear,0% 0,0% 100%,from(#999691),to(#c5c5c5));
+    background: -o-linear-gradient(top,#999691,#c5c5c5)
+}
+
+big {
+    background-image: url("img/white30.png")
+}
+.win span {
+    background-image: url("https://i.tq121.com.cn/i/weather2015/city/iconall.png");
+    background-repeat: no-repeat;
+    display: block
+}
+.win i {
+    background: 0;
+    line-height: 1em;
+    display: block
+}
+.win em span {
+    background-position: -84px 0;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}
+
+.win em span.NNW {
+    background-position: -200px -0px
+}
+
+.win em span.S {
+    background-position: -200px -22px
+}
+
+.win em span.N {
+    background-position: -200px -46px
+}
+
+.win em span.W {
+    background-position: -200px -91px
+}
+
+.win em span.E {
+    background-position: -200px -69px
+}
+
+.win em span.NE {
+    background-position: -200px -164px
+}
+
+.win em span.NW {
+    background-position: -200px -188px
+}
+
+.win em span.SE {
+    background-position: -200px -115px
+}
+
+.win em span.SW {
+    background-position: -200px -138px
+}
+
+big {
+    background-image: url("../../../i/weather2015/png/white30.png")
+}
+
+big.lv1 {
+    background-color: #1f8ce8
+}
+
+big.lv2 {
+    background-color: #66bfff
+}
+
+big.lv3 {
+    background-color: #8fa6bc
+}
+
+big.lv4 {
+    background-color: #9c9a95
+}
+
+big.none {
+    background-image: url("../../../i/weather2015/png/white30.png");
+    background-color: #fff
+}
+
+big.lv0 {
+    background-image: url("../../../i/weather2015/png/white30.png");
+    background-color: #fff
+}
+
+.sky:hover,.sky.on {
+    border: 1px solid #1c7ab0
+}
+
+.sky.on .slid {
+    background-position: -202px -229px;
+    width: 17px;
+    bottom: -9px;
+    *bottom: -11px
+}
+
+.sky.lv1.on .slid {
+    background-position: -202px -241px
+}
+
+.sky.lv2.on .slid {
+    background-position: -202px -253px
+}
+
+.sky.lv3.on .slid {
+    background-position: -202px -264px
+}
+
+.sky.lv4.on .slid {
+    background-position: -202px -275px
+}
+
+.c7d .btn {
+    height: 30px
+}
+
+.c7d .btn em {
+    float: left
+}
+
+.c7d .btn .r {
+    z-index: 99;
+    width: 138px;
+    height: 30px;
+    position: relative;
+    float: right
+}
+
+.c7d .btn .r .tit {
+    color: #4c4c4c;
+    font-size: 13px;
+    float: left
+}
+
+.c7d .btn .r .turn {
+    background-position: -176px -786px;
+    margin-left: 5px;
+    cursor: pointer;
+    position: relative;
+    float: left;
+    height: 22px;
+    width: 44px
+}
+
+.c7d .btn .r .turn.off {
+    background-position: -176px -810px
+}
+
+.c7d .btn .r .turn i {
+    background-position: -196px -765px;
+    height: 18px;
+    width: 18px;
+    position: absolute;
+    left: 0;
+    margin-left: 3px;
+    top: 1px
+}
+
+.c7d .btn .r i.icon {
+    cursor: pointer;
+    background-position: -176px -856px;
+    margin-left: 5px;
+    margin-top: 1px;
+    height: 20px;
+    width: 20px;
+    float: left
+}
+
+.c7d .btn .r .skypop {
+    display: none;
+    background: #fff;
+    box-shadow: 2px 2px 5px #aaa;
+    right: -23px;
+    top: 33px;
+    z-index: 99;
+    border: 1px solid #76c1f6;
+    position: absolute;
+    width: 380px;
+    height: 160px
+}
+
+.c7d .btn .r .skypop h3 {
+    color: #6b6b6b;
+    margin-left: 28px;
+    width: 330px;
+    line-height: 18px;
+    margin-top: 12px;
+    font-size: 12px;
+    text-align: left
+}
+
+.c7d .btn .r .skypop ul {
+    margin-left: 28px;
+    margin-top: 13px;
+    *margin-top: 4px;
+    width: 350px;
+    color: #6b6b6b
+}
+
+.c7d .btn .r .skypop ul li {
+    border: 0;
+    margin-left: 0;
+    line-height: 22px;
+    height: 22px;
+    width: 100%
+}
+
+.c7d .btn .r .skypop ul li em {
+    width: 38px;
+    height: 12px;
+    float: left;
+    margin-top: 5px
+}
+
+.c7d .btn .r .skypop ul li span {
+    float: left;
+    margin-left: 12px;
+    font-size: 12px
+}
+
+.c7d .btn .r .skypop ul li b {
+    float: left;
+    margin-left: 15px;
+    font-size: 12px;
+    font-weight: normal
+}
+
+.c7d .btn .r .skypop ul li.lv1 em {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=1,startColorStr=#0e7edf,endColorStr=#67b8f3);
+    background: -ms-linear-gradient(left,#0e7edf,#67b8f3);
+    background: -moz-linear-gradient(left,#0e7edf,#67b8f3);
+    background: -webkit-gradient(linear,0% 0,100% 0,from(#0e7edf),to(#67b8f3));
+    background: -o-linear-gradient(left,#0e7edf,#67b8f3)
+}
+
+.c7d .btn .r .skypop ul li.lv2 em {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=1,startColorStr=#51b3fa,endColorStr=#a1d2f5);
+    background: -ms-linear-gradient(left,#51b3fa,#a1d2f5);
+    background: -moz-linear-gradient(left,#51b3fa,#a1d2f5);
+    background: -webkit-gradient(linear,0% 0,100% 0,from(#51b3fa),to(#a1d2f5));
+    background: -o-linear-gradient(left,#51b3fa,#a1d2f5)
+}
+
+.c7d .btn .r .skypop ul li.lv3 em {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=1,startColorStr=#8faeca,endColorStr=#b7cedf);
+    background: -ms-linear-gradient(left,#8faeca,#b7cedf);
+    background: -moz-linear-gradient(left,#8faeca,#b7cedf);
+    background: -webkit-gradient(linear,0% 0,100% 0,from(#8faeca),to(#b7cedf));
+    background: -o-linear-gradient(left,#8faeca,#b7cedf)
+}
+
+.c7d .btn .r .skypop ul li.lv4 em {
+    FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=1,startColorStr=#9e9b96,endColorStr=#bfbfbe);
+    background: -ms-linear-gradient(left,#9e9b96,#bfbfbe);
+    background: -moz-linear-gradient(left,#9e9b96,#bfbfbe);
+    background: -webkit-gradient(linear,0% 0,100% 0,from(#9e9b96),to(#bfbfbe));
+    background: -o-linear-gradient(left,#9e9b96,#bfbfbe)
+}
+
+.c7d .btn .r .skypop i.s {
+    background-position: -177px -836px;
+    width: 15px;
+    height: 13px;
+    position: absolute;
+    top: -13px;
+    right: 40px
+}
+
+#weatherChart .split {
+    text-align: right;
+    height: 18px;
+    overflow: hidden;
+    margin-top: 6px
+}
+
+#weatherChart .split p {
+    display: none;
+    background: #b9b9b9;
+    float: right;
+    margin-right: 10px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 12px;
+    color: #fff;
+    padding: 0 10px;
+    border-radius: 3px
+}
+
+#weatherChart .split p.on {
+    display: block
+}
+
+#weatherChart .tabs {
+    height: 40px;
+    border-top: 3px solid #076ea8;
+    margin-top: 21px;
+    line-height: 43px;
+    padding-left: 2px;
+    overflow: hidden
+}
+
+#weatherChart .tabs h2 {
+    position: relative;
+    color: #555656;
+    float: left;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 42px;
+    width: 280px
+}
+
+#weatherChart .tabs h2 span {
+    margin-right: 34px;
+    cursor: pointer
+}
+
+#weatherChart .tabs h2 i {
+    background-position: -84px -297px;
+    display: block;
+    position: absolute;
+    left: 52px;
+    top: 0;
+    width: 16px;
+    height: 9px
+}
+
+#weatherChart .tabs h2 em {
+    position: absolute;
+    left: 135px;
+    top: 13px;
+    height: 18px;
+    border-right: 2px solid #818282;
+    display: block
+}
+
+#weatherChart .second {
+    left: 131px;
+    padding-top: 0;
+    position: absolute;
+    top: 32px
+}
+
+#weatherChart .tabs ul {
+    float: right
+}
+
+#weatherChart .tabs ul li {
+    border: 1px solid #fff;
+    color: #6c6c6c;
+    cursor: pointer;
+    float: left;
+    font-size: 15px;
+    height: 22px;
+    line-height: 22px;
+    margin: 10px 0 0 5px;
+    overflow: hidden;
+    padding: 0 6px;
+    text-align: center
+}
+
+#weatherChart .tabs ul li:hover {
+    color: #ee842f
+}
+
+#weatherChart .tabs ul li.on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+#weatherChart .tabs .wd_on,#history .wd_on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+#weatherChart .tabs .sd_on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+#weatherChart .tabs .js_on,#history .tabs .js_on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+#weatherChart .tabs .fl_on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+#weatherChart .chart {
+    margin-top: -10px;
+    position: relative
+}
+
+#weatherChart .chart em {
+    color: #aaa;
+    font-size: 12px;
+    position: absolute;
+    right: 23px;
+    top: 237px
+}
+
+#weatherChart .chart b {
+    color: #aaa;
+    display: none;
+    font-size: 12px;
+    left: 3px;
+    position: absolute;
+    text-align: center;
+    top: 243px;
+    width: 50px
+}
+
+#weatherChart .chart b#tem,#weatherChart .chart b#pm10 {
+    color: #aaa;
+    display: none;
+    font-size: 10px
+}
+
+#weatherChart .chart b#wd {
+    display: block
+}
+
+#weatherChart .chart #hourHolder {
+    height: 249px;
+    padding-left: 19px;
+    padding-top: 7px;
+    position: relative
+}
+
+#hourHolder .xLabel {
+    bottom: 0;
+    left: 61px;
+    position: absolute;
+    width: 600px
+}
+
+#hourHolder .xLabel span {
+    color: #8b8b8b;
+    display: block;
+    float: left;
+    font-size: 12px;
+    text-align: center;
+    width: 23px
+}
+
+#hourHolder .yLabel {
+    height: 280px;
+    left: 18px;
+    position: absolute;
+    text-align: right;
+    top: 1px
+}
+
+#hourHolder .yLabel span {
+    color: #8b8b8b;
+    display: block;
+    font-size: 12px;
+    height: 37px;
+    line-height: 28px;
+    width: 20px
+}
+
+#hourHolder .result {
+    color: #ee842f;
+    display: none;
+    font-weight: bold;
+    left: 40%;
+    position: absolute;
+    top: 60%
+}
+
+#hourHolder .showData {
+    background-color: #076ea8;
+    color: #fff;
+    display: none;
+    left: 40%;
+    padding: 0 5px;
+    position: absolute;
+    top: 60%
+}
+
+#hourHolder .data {
+    background-color: #076ea8;
+    color: #fff;
+    height: 24px;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    width: 50px
+}
+
+#hourHolder .date {
+    background-color: #076ea8;
+    color: #fff;
+    height: 24px;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    width: 150px
+}
+
+#weatherChart .chart .humidity,#weatherChart .chart .tem,#weatherChart .chart .pm10,#weatherChart .chart .air,#weatherChart .chart .temperature,#weatherChart .chart .rain,#weatherChart .chart .wind {
+    display: none;
+    padding-bottom: 11px
+}
+
+#weatherChart .chart .detail {
+    color: #6f6f6f;
+    display: block;
+    font-size: 12px;
+    margin: 4px 0 0;
+    padding-right: 21px;
+    position: relative;
+    text-align: right
+}
+
+#weatherChart .chart .detail img {
+    left: 20px;
+    position: absolute;
+    top: 10px
+}
+
+#weatherChart .chart .detail a {
+    color: #076ea8
+}
+
+#weatherChart .aqiColorExp {
+    margin-top: 16px
+}
+
+#weatherChart .aqiColorExp span {
+    border-top-style: solid;
+    border-top-width: 3px;
+    float: left;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 3px;
+    text-align: center;
+    width: 110px
+}
+
+#weatherChart .aqiColorExp .span1 {
+    border-top-color: #a7cf8c
+}
+
+#weatherChart .aqiColorExp .span2 {
+    border-top-color: #f7da64
+}
+
+#weatherChart .aqiColorExp .span3 {
+    border-top-color: #f29e39
+}
+
+#weatherChart .aqiColorExp .span4 {
+    border-top-color: #da555d
+}
+
+#weatherChart .aqiColorExp .span5 {
+    border-top-color: #b9377a
+}
+
+#weatherChart .aqiColorExp .span6 {
+    border-top-color: #881326
+}
+
+.sevenDay {
+    display: none;
+    background: none repeat scroll 0 0 #fff;
+    position: relative;
+    width: 680px
+}
+
+.sevenDay ul.b1 {
+    display: block;
+    padding: 15px 9px 0 38px
+}
+
+.sevenDay ul.b1 li {
+    border-top: 1px solid #ccc;
+    height: 59px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc
+}
+
+.sevenDay ul.b2 {
+    display: block;
+    left: -5px;
+    position: absolute;
+    top: 5px;
+    width: 40px
+}
+
+.sevenDay ul.b2 li {
+    font-size: 14px;
+    height: 60px;
+    text-align: right;
+    color: #575757
+}
+
+.sevenDay ul.b li p {
+    border-top: 1px solid #ccc;
+    height: 1px;
+    left: 57px;
+    position: absolute;
+    top: 0;
+    width: 583px
+}
+
+.sevenDay ul.f {
+    left: 80px;
+    position: absolute;
+    top: 16px;
+    z-index: 1
+}
+
+.sevenDay ul.f li {
+    float: left;
+    margin-right: 60px;
+    position: relative
+}
+
+.sevenDay ul.f li .t {
+    font-size: 16px;
+    height: 64px;
+    left: -12px;
+    position: absolute;
+    text-align: center;
+    top: -50px;
+    width: 50px
+}
+
+.sevenDay ul.f li .t p {
+    height: 18px;
+    line-height: 18px
+}
+
+.sevenDay ul.f li .n {
+    width: 24px
+}
+
+.sevenDay ul.f li .n .zt {
+    background-position: -81px -242px;
+    height: 10px
+}
+
+.sevenDay ul.f li .n .zc {
+    background: url("../../i/weather2014/city/z3.png") repeat scroll center center transparent;
+    height: 0
+}
+
+.sevenDay ul.f li .n .zb {
+    background-position: -81px -251px;
+    height: 10px
+}
+
+.sevenDay ul.f li .b {
+    bottom: -50px;
+    font-size: 16px;
+    left: -11px;
+    position: absolute;
+    text-align: center;
+    width: 50px
+}
+
+.sevenDay ul.f li .b p {
+    height: 18px;
+    line-height: 18px
+}
+
+.sevenDay ul.c {
+    left: 81px;
+    padding-top: 10px;
+    position: absolute;
+    top: 320px
+}
+
+.sevenDay ul.c li {
+    color: #666;
+    float: left;
+    text-align: center;
+    width: 80px
+}
+
+.sevenDay ul.d {
+    left: 50px;
+    position: absolute;
+    top: 380px
+}
+
+.sevenDay ul.d li {
+    float: left;
+    width: 85px
+}
+
+.sevenDay ul.d li .t {
+    border-left: 1px solid #ccc;
+    font-size: 0;
+    height: 10px;
+    width: 100%
+}
+
+.sevenDay ul.d li .tz {
+    border-right: 1px solid #ccc
+}
+
+.sevenDay ul.d li .c {
+    color: #0b70a9;
+    font-size: 16px;
+    height: 20px;
+    line-height: 20px;
+    margin: 0 auto;
+    text-align: center;
+    width: 50px
+}
+
+.sevenDay ul.d li .end {
+    color: #8abb4a
+}
+
+.livezs {
+    display: none
+}
+
+.livezs .t {
+    height: 38px;
+    overflow: hidden
+}
+
+.livezs .t h1 {
+    float: left;
+    font-size: 20px;
+    line-height: 26px;
+    margin-top: 7px;
+    text-indent: 2px
+}
+
+.livezs .t input {
+    background: rgba(0,0,0,0) none repeat scroll 0 0;
+    border: 1px solid #fff;
+    float: right;
+    font-size: 15px;
+    height: 23px;
+    line-height: 18px;
+    margin-right: 11px;
+    margin-top: 10px;
+    width: 75px
+}
+
+.livezs .t input.on {
+    border: 1px solid #85b8d4;
+    color: #076ea8
+}
+
+.livezs ul li {
+    background: #daedff none repeat scroll 0 0;
+    float: left;
+    height: 120px;
+    margin-left: 1px;
+    margin-right: 2px;
+    margin-top: 5px;
+    overflow: hidden;
+    position: relative;
+    width: 223px
+}
+
+.livezs ul li em {
+    color: #1570a6;
+    display: block;
+    font-size: 13px;
+    left: 5px;
+    line-height: 30px;
+    position: absolute;
+    text-align: center;
+    top: 69px;
+    width: 82px;
+    line-height: 22px
+}
+
+.livezs ul li span {
+    color: #187db6;
+    display: block;
+    font-size: 20px;
+    height: 24px;
+    left: 90px;
+    line-height: 24px;
+    position: absolute;
+    top: 20px;
+    width: 100px
+}
+
+.livezs ul li p {
+    color: #818181;
+    font-size: 13px;
+    left: 90px;
+    line-height: 24px;
+    position: absolute;
+    text-align: left;
+    top: 54px;
+    width: 129px
+}
+
+.livezs .hide {
+    display: none
+}
+
+.livezs .show {
+    display: block;
+    visibility: visible
+}
+
+.fb_sub,.fb i {
+    background-image: url("https://i.tq121.com.cn/i/weather2015/city/iconall.png");
+    background-repeat: no-repeat;
+    display: block
+}
+
+.fb_sub {
+    background-color: #fff;
+    background-position: 0 -903px;
+    color: #4c4c4c;
+    cursor: pointer;
+    float: right;
+    font-size: 12px;
+    height: 20px;
+    margin-right: 15px;
+    margin-top: 1px;
+    width: 79px;
+    text-align: center;
+    line-height: 19px
+}
+
+.fb_sub:hover {
+    background-position: 0 -924px
+}
+
+.fb {
+    display: none;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 11111
+}
+
+.fb .send {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #77c2ec;
+    box-shadow: 1px 4px 4px #aaa;
+    height: 180px;
+    left: 50%;
+    margin-left: -140px;
+    margin-top: -90px;
+    position: absolute;
+    top: 50%;
+    width: 280px;
+    z-index: 2;
+    border-radius: 3px
+}
+
+.fb .send h1 {
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 1px;
+    margin-left: 26px;
+    margin-top: 23px
+}
+
+.fb .send h1 b {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0 2px
+}
+
+.fb .send p {
+    font-size: 12px;
+    margin-left: 26px
+}
+
+.fb .send p em {
+    color: #1f8ce8
+}
+
+.fb .send ul {
+    margin-left: 14px;
+    margin-top: 18px;
+    height: 70px
+}
+
+.fb .send ul li {
+    cursor: pointer;
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    position: relative;
+    width: 131px
+}
+
+.fb .send ul li i {
+    background-position: -154px -902px;
+    display: block;
+    height: 17px;
+    left: 10px;
+    position: absolute;
+    top: 6px;
+    width: 17px
+}
+
+.fb .send ul li.on i {
+    background-position: -172px -902px
+}
+
+.fb .send ul li span {
+    left: 31px;
+    position: absolute;
+    top: 0
+}
+
+.fb .send .submit {
+    background: #77c2ec none repeat scroll 0 0;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 14px;
+    height: 28px;
+    width: 229px;
+    cursor: pointer;
+    position: absolute;
+    left: 24px;
+    top: 133px
+}
+
+.fb .bg {
+    background: #fff none repeat scroll 0 0;
+    height: 100%;
+    left: 0;
+    opacity: .5;
+    filter: alpha(opacity=50);
+    position: absolute;
+    top: 0;
+    width: 100%
+}
+
+.fb i.close {
+    background-position: -180px -920px;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer
+}
+
+.fb i.close:hover {
+    background-position: -153px -920px
+}
+
+.fb .succ {
+    display: block;
+    width: 222px;
+    height: 124px;
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #77c2ec;
+    box-shadow: 1px 4px 4px #aaa;
+    margin-left: -111px;
+    margin-top: -62px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    color: #252525;
+    border-radius: 2px
+}
+
+.fb .succ h1 {
+    font-size: 20px;
+    margin-left: 40px;
+    margin-top: 39px
+}
+
+.fb .succ p {
+    font-size: 12px;
+    margin-left: 40px;
+    margin-top: 0
+}
+
+.fb .img {
+    background-position: -78px -904px;
+    width: 70px;
+    height: 35px;
+    position: absolute;
+    left: 116px;
+    top: 30px
+}
+
+.wjdc_l {
+    background: url(https://i.tq121.com.cn/i/weather2015/img_index/yhdc.png) no-repeat;
+    width: 77px;
+    height: 20px;
+    position: absolute;
+    right: 147px;
+    top: 3px
+}
+
+.wjdc_l:hover {
+    background: url(https://i.tq121.com.cn/i/weather2015/img_index/yhdch.png) no-repeat
+}
+big {
+    margin: 3px auto;
+    background-repeat: no-repeat;
+    background-position: -640px 240px;
+    display: block;
+}
+big.jpg30 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/white30.png);
+    height: 30px;
+    width: 31px
+}
+
+big.png30 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/white30.png);
+    height: 30px;
+    width: 31px
+}
+
+big.jpg80 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/blue80.png);
+    height: 80px;
+    width: 80px
+}
+
+big.png40 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/white30.png);
+    height: 30px;
+    width: 30px
+}
+
+big.png80 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/blue80.png);
+    height: 80px;
+    width: 80px
+}
+
+.around li:hover big.jpg30 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/white30.png);
+    height: 30px;
+    width: 31px
+}
+
+.on big.jpg80 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/blue80.png);
+    height: 80px;
+    width: 80px
+}
+
+.sk big.jpg80 {
+    background-image: url(https://i.tq121.com.cn/i/weather2015/png/blue80.png);
+    height: 80px;
+    width: 80px
+}
+
+big.d0,big.d00 {
+    background-position: 0 0
+}
+
+big.d1,big.d01 {
+    background-position: -80px 0
+}
+
+big.d2,big.d02 {
+    background-position: -160px 0
+}
+
+big.d3,big.d03 {
+    background-position: -240px 0
+}
+
+big.d4,big.d04 {
+    background-position: -320px 0
+}
+
+big.d5,big.d05 {
+    background-position: -400px 0
+}
+
+big.d6,big.d06 {
+    background-position: -480px 0
+}
+
+big.d7,big.d07 {
+    background-position: -560px 0
+}
+
+big.d8,big.d08 {
+    background-position: -640px 0
+}
+
+big.d9,big.d09 {
+    background-position: 0 -80px
+}
+
+big.d10 {
+    background-position: -80px -80px
+}
+
+big.d11 {
+    background-position: -160px -80px
+}
+
+big.d12 {
+    background-position: -240px -80px
+}
+
+big.d13 {
+    background-position: -320px -80px
+}
+
+big.d14 {
+    background-position: -400px -80px
+}
+
+big.d15 {
+    background-position: -480px -80px
+}
+
+big.d16 {
+    background-position: -560px -80px
+}
+
+big.d17 {
+    background-position: -640px -80px
+}
+
+big.d18 {
+    background-position: 0 -160px
+}
+
+big.d19 {
+    background-position: -80px -160px
+}
+
+big.d20 {
+    background-position: -160px -160px
+}
+
+big.d21 {
+    background-position: -240px -160px
+}
+
+big.d22 {
+    background-position: -320px -160px
+}
+
+big.d23 {
+    background-position: -400px -160px
+}
+
+big.d24 {
+    background-position: -480px -160px
+}
+
+big.d25 {
+    background-position: -560px -160px
+}
+
+big.d26 {
+    background-position: -640px -160px
+}
+
+big.d27 {
+    background-position: 0 -240px
+}
+
+big.d28 {
+    background-position: -80px -240px
+}
+
+big.d29 {
+    background-position: -160px -240px
+}
+
+big.d30 {
+    background-position: -240px -240px
+}
+
+big.d31 {
+    background-position: -320px -240px
+}
+
+big.d32 {
+    background-position: -400px -240px
+}
+
+big.d33 {
+    background-position: -480px -240px
+}
+
+big.d53 {
+    background-position: -560px -240px
+}
+
+big.d57 {
+    background-position: -720px 0
+}
+
+big.d32 {
+    background-position: -720px -80px
+}
+
+big.d49 {
+    background-position: -720px -160px
+}
+
+big.d58 {
+    background-position: -720px -240px
+}
+
+big.d54 {
+    background-position: -800px 0
+}
+
+big.d55 {
+    background-position: -800px -80px
+}
+
+big.d56 {
+    background-position: -800px -160px
+}
+
+big.d301 {
+    background-position: -880px 0
+}
+
+big.d302 {
+    background-position: -880px -80px
+}
+
+big.n0,big.n00 {
+    background-position: 0 -320px
+}
+
+big.n1,big.n01 {
+    background-position: -80px -320px
+}
+
+big.n2,big.n02 {
+    background-position: -160px -320px
+}
+
+big.n3,big.n03 {
+    background-position: -240px -320px
+}
+
+big.n4,big.n04 {
+    background-position: -320px -320px
+}
+
+big.n5,big.n05 {
+    background-position: -400px -320px
+}
+
+big.n6,big.n06 {
+    background-position: -480px -320px
+}
+
+big.n7,big.n07 {
+    background-position: -560px -320px
+}
+
+big.n8,big.n08 {
+    background-position: -640px -320px
+}
+
+big.n9,big.n09 {
+    background-position: 0 -400px
+}
+
+big.n10 {
+    background-position: -80px -400px
+}
+
+big.n11 {
+    background-position: -160px -400px
+}
+
+big.n12 {
+    background-position: -240px -400px
+}
+
+big.n13 {
+    background-position: -320px -400px
+}
+
+big.n14 {
+    background-position: -400px -400px
+}
+
+big.n15 {
+    background-position: -480px -400px
+}
+
+big.n16 {
+    background-position: -560px -400px
+}
+
+big.n17 {
+    background-position: -640px -400px
+}
+
+big.n18 {
+    background-position: 0 -480px
+}
+
+big.n19 {
+    background-position: -80px -480px
+}
+
+big.n20 {
+    background-position: -160px -480px
+}
+
+big.n21 {
+    background-position: -240px -480px
+}
+
+big.n22 {
+    background-position: -320px -480px
+}
+
+big.n23 {
+    background-position: -400px -480px
+}
+
+big.n24 {
+    background-position: -480px -480px
+}
+
+big.n25 {
+    background-position: -560px -480px
+}
+
+big.n26 {
+    background-position: -640px -480px
+}
+
+big.n27 {
+    background-position: 0 -560px
+}
+
+big.n28 {
+    background-position: -80px -560px
+}
+
+big.n29 {
+    background-position: -160px -560px
+}
+
+big.n30 {
+    background-position: -240px -560px
+}
+
+big.n31 {
+    background-position: -320px -560px
+}
+
+big.n32 {
+    background-position: -400px -560px
+}
+
+big.n33 {
+    background-position: -480px -560px
+}
+
+big.n53 {
+    background-position: -560px -560px
+}
+
+big.n57 {
+    background-position: -720px -320px
+}
+
+big.n32 {
+    background-position: -720px -400px
+}
+
+big.n49 {
+    background-position: -720px -480px
+}
+
+big.n58 {
+    background-position: -720px -560px
+}
+
+big.n54 {
+    background-position: -800px -320px
+}
+
+big.n55 {
+    background-position: -800px -400px
+}
+
+big.n56 {
+    background-position: -800px -480px
+}
+
+big.n301 {
+    background-position: -880px -320px
+}
+
+big.n302 {
+    background-position: -880px -400px
+}
+/* 风向 */
+i,em {
+    font-style: normal
+}
+/* 自动补全 */
+.autocomplete-suggestions {
+    position: absolute;
+    width: 180px;
+    left: 50%;
+    margin-left: -90px;
+    top: 32px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, .95);
+    z-index: 999;
+    border: .1px solid white;
+    border-radius: 0 0 3% 3%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 1px 1px white;
+}
+.autocomplete-suggestions li {
+    display: block;
+    width: 100%;
+    list-style-type: none;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 2em;
+    padding-right: 1em;
+    padding-left: 1em;
+    /* border: 1px solid #ccc; */
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.autocomplete-suggestions li:hover, .autocomplete-suggestions li[selected] {
+    background-color: rgba(255, 200, 200, .5);
+    cursor: pointer;
+}
+.autocomplete-suggestions li:active {
+    background-color: rgba(255, 200, 200, 1);
+}
+    </style>
+    <script>
+        var huangli = {};
+
+            huangli['祭祀'] = "指祠堂之祭祀、即拜祭祖先或庙寺的祭拜、拜神明等事。";
+            huangli['祈福'] = "就是去寺庙上香还愿，祈求神明降福或设醮还愿之事。";
+            huangli['求嗣'] = "向神明祈求后嗣(子孙)之意。也就是求子啦。";
+            huangli['开光'] = "神佛像塑成后、供奉上位之事。";
+            huangli['塑绘'] = "寺庙之绘尽或雕刻神像、画雕人像等。";
+            huangli['齐醮'] = "设醮建立道场祈拜、求平安等事。";
+            huangli['斋醮'] = "庙宇建醮前需举行的斋戒仪式。";
+            huangli['沐浴'] = "祈福设醮或还愿时清洁身体之谓。";
+            huangli['酬神'] = "还愿，答谢神恩。";
+            huangli['造庙'] = "建造寺，庙，宫，观，堂。";
+            huangli['祀灶'] = '亦称“祭灶”、“送灶”。即祭拜灶神。';
+            huangli['焚香'] = "将一些带有特殊气味和芳香气味的植物放在火焰中烟熏火燎，如今可看成是烧香。";
+            huangli['谢土'] = "建筑物完工后所举行的祭祀。";
+            huangli['出火'] = "谓移动神位，「火」指「香火」而言。";
+            huangli['雕刻'] = "雕刻神像或人像等。";
+            huangli['嫁娶'] = "嫁娶指的是男娶女嫁，举行结婚大典，迎亲之日。";
+            huangli['订婚'] = "男女订立婚约。";
+            huangli['纳采'] = "同结婚姻，受授聘金，也就是下聘礼。俗称：订婚、文定、过订、完聘、大定。";
+            huangli['问名'] = "男女双方各取年庚，供于神案，经数日无事即可合婚。";
+            huangli['纳婿'] = "指男方入赘于女方为婿之意。同嫁娶。";
+            huangli['归宁'] = "新婚后，新娘与新郎第一次回娘家。";
+            huangli['安床'] = "安置睡床卧铺，一为新婚安置新床、二为事事不顺重新安新床。";
+            huangli['合帐'] = "制作蚊帐之事，今应指安置窗帘。";
+            huangli['冠笄'] = "「冠」指男、「笄」指女、举行男女成人的仪式、称之为冠笄。成人之后，代表可以结婚了。";
+            huangli['订盟'] = "订婚仪式的一种，俗称小聘(订)。也是订亲。";
+            huangli['进人口'] = "指收纳养子女，或认干儿子、干女儿。";
+            huangli['裁衣'] = "临近婚期前一个月，男方要备酒、蓝布和金银钗环交给媒人送到女方家。";
+            huangli['挽面'] = "对新娘脸部进行修饰，一般是绞汗毛、细眉毛、齐鬓角等。";
+            huangli['开容'] = '又称为“挽面” ,意指新娘在出嫁之前, 请人用线拔除其脸上的毫毛。';
+            huangli['修坟'] = "也就是修理坟墓。需要注意的是，修坟与建坟是不一样的。修理坟墓就是跟修屋一样，年深日久或是坟地出了问题才修理一下。就是这种。";
+            huangli['启攒'] = "指坟墓「洗骨」之事。俗谓「拾金」也。";
+            huangli['破土'] = '仅指埋葬用的破土、与一般建筑房屋的“动土”不同，“破土”属阴宅，“动土”属阳宅也。';
+            huangli['安葬'] = "也就是葬礼,举行埋葬仪式等。";
+            huangli['立碑'] = "竖立墓碑或纪念碑。";
+            huangli['成服'] = "穿上丧服。";
+            huangli['除服'] = "脱下丧服。";
+            huangli['开生坟'] = "指人未死，先找地作坟墓。";
+            huangli['合寿木'] = "製作棺材。";
+            huangli['入殓'] = "入殓就是将尸体放入棺材之意。";
+            huangli['移柩'] = "举行葬仪时、将棺木移出屋外之事。";
+            huangli['普渡'] = "祭祀超渡阴界的孤魂野鬼。";
+            huangli['合寿木'] = "指生前预先购买棺材。";
+            huangli['入宅'] = '即迁入新宅、所谓“新居落成典礼”也。新居建成，或是旧家搬到新家去了，一个典礼。';
+            huangli['安香'] = "安土地公或祖先之神位。";
+            huangli['安门'] = "房屋装设门户等工事。";
+            huangli['修造'] = "也就是阳宅的修造与修理。";
+            huangli['起基'] = "建筑时、第一次动起锄头挖土。这第一锄是很重要的，所以也要看日子的。";
+            huangli['动土'] = "建筑时、第一次动起锄头挖土。这个是除了基础以外的动土。";
+            huangli['上梁'] = "装上建筑物屋顶的大梁，西式建筑指屋顶之灌浆(预拌混凝土)。";
+            huangli['竖柱'] = "架马俗称起工架马；指建筑场所之鹰架。";
+            huangli['开井开池'] = "开渠、筑阴沟、开鱼池；开凿水井、池塘。";
+            huangli['作陂放水'] = "建筑蓄水池、将水灌入蓄水池。";
+            huangli['拆卸'] = "就是拆掉建筑物。也就是我们常说的扒房子。";
+            huangli['破屋'] = "拆卸；拆除房屋。";
+            huangli['坏垣'] = "拆卸；指拆除围墙。";
+            huangli['补垣'] = "塞穴、填坑、覆井；塞穴指堵塞洞穴或蚁穴。";
+            huangli['伐木做梁'] = "砍伐树木作屋梁。";
+            huangli['作灶'] = "指安修厨灶、厨炉移位。";
+            huangli['解除'] = "扫舍；指冲洗宅舍、解除灾厄。";
+            huangli['开柱眼'] = "指作柱木之事。";
+            huangli['穿屏扇架'] = "制作门扇、屏障等工作。";
+            huangli['盖屋合脊'] = "装盖房屋的屋顶等工作。";
+            huangli['安床'] = "指安置睡床卧铺之意。";
+            huangli['开厕'] = "建造厕所。";
+            huangli['造仓'] = "建筑仓库或修理仓库。";
+            huangli['塞穴'] = "指堵塞洞穴或蚁穴等。";
+            huangli['平治道涂'] = "指铺平道路等工事。";
+            huangli['造桥'] = "建造桥梁。";
+            huangli['作厕'] = "建造或修改厕所。";
+            huangli['筑堤'] = "修筑或加固河堤或海堤。";
+            huangli['开池'] = "挖掘池塘。";
+            huangli['伐木'] = "采伐林木。";
+            huangli['开渠'] = "指构筑屋内的下水道。";
+            huangli['掘井'] = "即开凿水井。";
+            huangli['扫舍'] = "把屋内外打扫干净。";
+            huangli['放水'] = '亦称“开渠放水”，即把水注入新造的蓄水池。';
+            huangli['造屋'] = "装盖房屋等工作。";
+            huangli['合脊'] = "装盖房屋的屋顶。";
+            huangli['造畜椆栖'] = "指修建家禽及家畜住的小屋。";
+            huangli['修门'] = "修理门。";
+            huangli['定磉'] = "意为着平建基，固定石磉。";
+            huangli['作梁'] = "指砍伐树木作屋梁。";
+            huangli['修饰垣墙'] = "即修补与粉饰围墙。";
+            huangli['架马'] = "又称“起工架马”，即在建筑房屋时搭立木架，以供工匠立足和搬运建材之用。若用现代语，就是搭建鹰架。";
+            huangli['平治道涂'] = "即修整道路的意思。";
+            huangli['开市'] = '“开业”之意，商品行号开张做生意“开幕典礼”“开工”等。包括：(1)年头初开始营业或开工等事  (2)新设店铺商行或新厂开幕等事。';
+            huangli['挂匾'] = "指悬挂招牌或各种匾额。包括公司的，也包括家里古时府上的牌匾。";
+            huangli['纳财'] = "指已属于自己的财富基础上购置产业、进货、收帐、收租、讨债、贷款、五谷入仓等。";
+            huangli['求财'] = "相对于纳财来说求财是指未属于自己的财富而祈求通过投资等活动赚取博得财富。";
+            huangli['开仓'] = "出货财，商贾之出货、销货、放债。";
+            huangli['买车'] = "购买陆地交通工具。";
+            huangli['置产'] = '又称为“修置产室”，即购买成屋的意思。';
+            huangli['雇庸'] = "聘请雇佣人员。";
+            huangli['出货财'] = "指新公司或新年度首次从仓库销出货物，出货放贷。";
+            huangli['安机械'] = "安机器、安纺车。";
+            huangli['造车器'] = "造舟船；制造水陆交通工具(适新车交车)。";
+            huangli['经络'] = "安机器、织布、收蚕、安纺车、机器。 ";
+            huangli['酝酿'] = "指酿酒、造酱料等事。";
+            huangli['作染'] = "指把布帛绸缎染成各种颜色。";
+            huangli['鼓铸'] = "指用风鼓生火冶炼铸造器具。";
+            huangli['造船'] = "即制造水上的交通工具。";
+            huangli['割蜜'] = "割蜜、造麴酿酒、养蜂取蜜(酝酿辛日不宜)。";
+            huangli['栽种'] = "栽种植物或接枝。";
+            huangli['取渔'] = "捕鱼。";
+            huangli['结网'] = "织鱼网。";
+            huangli['牧养'] = "放牧饲养。";
+            huangli['安碓硙'] = '就是“安放舂米的石磨”的意思。';
+            huangli['习艺'] = "学习特殊技艺，行拜师礼。";
+            huangli['入学'] = "指拜师学习技艺, 或入学堂接受教育。";
+            huangli['沐浴'] = "即洗澡净身, 指斋戒沐浴净身, 亦指出生儿首次洗身的意思。";
+            huangli['理发'] = "仅指初生婴儿第一次剃胎发或出家。";
+            huangli['探病'] = "探望病人。";
+            huangli['见贵'] = "遇见贵人。";
+            huangli['乘船'] = "指搭船过江（或出海）。";
+            huangli['渡水'] = "过江（或出海）做生意或讨生活。";
+            huangli['针灸'] = "以针法和灸法治病。";
+            huangli['出行'] = "指外出旅行、观光游览。";
+            huangli['移徙'] = "指搬家，迁移入住所(含非新宅)之意。";
+            huangli['分居'] = "指大家庭分家、各自另起炉灶之意。";
+            huangli['剃头'] = "仅指初生婴儿第一次剃胎发，或出家之落发。";
+            huangli['整手足甲'] = "初生婴儿第一次修剪手足甲。";
+            huangli['栽种'] = "栽种植物，或接枝。";
+            huangli['纳畜'] = "牧养、收买入家畜、家禽、宠物等。";
+            huangli['捕捉'] = "断蚁，扑灭家中或农作物之害虫生物。";
+            huangli['畋猎'] = "打猎或捕捉禽兽。";
+            huangli['教牛马'] = "谓训练牛马之工作。";
+            huangli['会亲友'] = "聚集朋友；有朋相会。";
+            huangli['赴任'] = "走马上任。当官的好日子。";
+            huangli['求医'] = "仅指求医治疗慢性痼疾或动手术。";
+            huangli['治病'] = "治疗疾病。";
+            huangli['词讼'] = '即“打官司”,起诉状。';
+            huangli['入宅'] = "即迁入新宅、所谓“新居落成典礼”也。新居建成，或是旧家搬到新家去了，一个典礼。";
+            huangli['安香'] = "安土地公或祖先之神位。";
+            huangli['安门'] = "房屋装设门户等工事。";
+            huangli['修造'] = "也就是阳宅的修造与修理。";
+            huangli['起基动土'] = "建筑时、第一次动起锄头挖土。这个是除了基础以外的动土。";
+            huangli['上梁'] = "装上建筑物屋顶的大梁，西式建筑指屋顶之灌浆(预拌混凝土)。";
+            huangli['竖柱'] = "架马俗称起工架马；指建筑场所之鹰架。";
+            huangli['开井开池'] = "开渠、筑阴沟、开鱼池；开凿水井、池塘。";
+            huangli['作陂放水'] = "建筑蓄水池、将水灌入蓄水池。";
+            huangli['拆卸'] = "就是拆掉建筑物。也就是我们常说的扒房子。";
+            huangli['破屋坏垣'] = "坏垣、拆卸；拆除房屋或围墙。";
+            huangli['补垣'] = "塞穴、填坑、覆井；塞穴指堵塞洞穴或蚁穴。";
+            huangli['伐木做梁'] = "砍伐树木作屋梁。";
+            huangli['作灶'] = "指安修厨灶、厨炉移位。";
+            huangli['解除'] = "扫舍；指冲洗宅舍、解除灾厄。";
+            huangli['开柱眼'] = "指作柱木之事。";
+            huangli['穿屏扇架'] = "制作门扇、屏障等工作。";
+            huangli['盖屋合脊'] = "装盖房屋的屋顶等工作。";
+            huangli['盖屋'] = "装盖房屋的屋顶等工作。";
+            huangli['合脊'] = "装盖房屋的屋顶等工作。";
+            huangli['安床'] = "指安置睡床卧铺之意。";
+            huangli['开厕'] = "建造厕所。";
+            huangli['造仓库'] = "建筑仓库或修理仓库。";
+            huangli['塞穴'] = "指堵塞洞穴或蚁穴等。";
+            huangli['平治道涂'] = "指铺平道路等工事。";
+            huangli['谢土'] = "建筑物完工后所举行的祭祀。";;
+
+            huangli['开市'] = "“开业”之意，商品行号开张做生意“开幕典礼”“开工”等。包括：(1)年头初开始营业或开工等事  (2)新设店铺商行或新厂开幕等事。";
+            huangli['挂匾'] = "指悬挂招牌或各种匾额。包括公司的，也包括家里古时府上的牌匾。";
+            huangli['立券交易'] = "订立各种契约互相买卖之事。这差不多相当于现在的签合同。";
+            huangli['交易'] = "交易，即动产不动产之买卖。";
+            huangli['立券'] = "立劵，即订立契约。";
+            huangli['纳财'] = "指已属于自己的财富基础上购置产业、进货、收帐、收租、讨债、贷款、五谷入仓等。";
+            huangli['求财'] = "相对于纳财来说求财是指未属于自己的财富而祈求通过投资等活动赚取博得财富。";
+            huangli['开仓'] = "出货财，商贾之出货、销货、放债。";
+            huangli['安机'] = "安机器、安纺车。";
+            huangli['造车器'] = "造舟船；制造水陆交通工具(适新车交车)。";
+            huangli['经络'] = "安机器、织布、收蚕、安纺车、机器。 ";
+            huangli['酝酿'] = "指酿酒、造酱料等事。";
+            huangli['平治道涂'] = "即修整道路的意思。";
+
+            huangli['出行'] = "指外出旅行、观光游览。";
+            huangli['移徙'] = "指搬家，迁移入住所(含非新宅)之意。";
+            huangli['分居'] = "指大家庭分家、各自另起炉灶之意。";
+            huangli['出火'] = "谓移动神位，「火」指「香火」而言。";
+            huangli['剃头'] = "仅指初生婴儿第一次剃胎发，或出家之落发。";
+            huangli['整手足甲'] = "初生婴儿第一次修剪手足甲。";
+            huangli['栽种'] = "栽种植物，或接枝。";
+            huangli['纳畜'] = "牧养、收买入家畜、家禽、宠物等。";
+            huangli['捕捉'] = "断蚁，扑灭家中或农作物之害虫生物。";
+            huangli['畋猎'] = "打猎或捕捉禽兽。";
+            huangli['教牛马'] = "谓训练牛马之工作。";
+
+            huangli['会友'] = "聚集朋友；有朋相会。";
+            huangli['赴任'] = "走马上任。当官的好日子。";
+            huangli['求医疗病'] = "仅指求医治疗慢性痼疾或动手术。";
+
+
+            huangli['诸事不宜'] = "宜：是指这一天没有特别合适做的事。忌：是指这一天做事犯忌。";
+            huangli['余事勿取'] = "就是其他的事情都不要做，危厉程度仅次于诸事不宜。";
+
+            huangli['青龙'] = "消息吉。十二值神之一，与明堂、金匮、天德、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['明堂'] = "吉。十二值神之一，与青龙、金匮、天德、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['朱雀'] = "口舌。十二值神之一，与天刑、白虎、天牢、玄武、勾陈一样，所值的属于黑道凶日。";
+            huangli['金匮'] = "财星吉。十二值神之一，与青龙、明堂、天德、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['天德'] = "官贵吉。十二值神之一，与青龙、明堂、金匮、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['白虎'] = "口舌官非。十二值神之一，与天刑、天牢、朱雀、勾陈、玄武一样，所值的属于黑道凶日。";
+            huangli['玉堂'] = "吉。十二值神之一，与青龙、明堂、金匮、天德、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['天牢'] = "凶星宜忌。十二值神之一，与天刑、朱雀、白虎、玄武、勾陈一样，所值的属于黑道凶日。";
+            huangli['玄武'] = "内小人盗贼暗害。十二值神之一，与天刑、天牢、朱雀、白虎、勾陈一样，所值的属于黑道凶日。";
+            huangli['司命'] = "官长吉。十二值神之一，与青龙、明堂、金匮、天德、玉堂、司命一样，所值的属于黄道吉日。";
+            huangli['勾陈'] = "口舌牵连。十二值神之一，与天刑、朱雀、白虎、天牢、玄武一样，所值的属于黑道凶日。";
+
+            huangli['白虎须用'] = "白虎须用麒麟符制，否则诸事不宜”是说这个时辰犯“白虎煞”（白虎黑道），需用“麒麟符”制化，以保用事顺利，人平安、吉祥。";
+            huangli['朱雀须用'] = "朱雀为南方属火，为黑道凶日。在择日中，若所办的事情不得不在朱雀日这天办，就须用凤凰符制。一般去庙宇（道观）请一道凤凰符佩带，或请法师画一道凤凰符佩带。这样就可以在朱雀日这天办事情了。";
+            huangli['日时相冲'] = "即当日的地支与当月的地支相冲，也即“月破”。";
+            huangli['馀事勿取'] = "除了黄历上规定的，其余的事情都不适合做。"; 
+    </script>
 </head>
 <body>
     <div class="title">
@@ -82,5 +2147,676 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="js/beauty.js"></script>
+<script>
+    function getXYbyIP() {
+            var url = "https://api.map.baidu.com/location/ip?ak=HQi0eHpVOLlRuIFlsTZNGlYvqLO56un3&coor=bd09ll"
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'JSONP',
+                async: false,
+                cache: true,
+                success: function (data) {
+                    province = data['content']['address_detail']['province'].replace('省', '')
+                    city = data['content']['address_detail']['city'].replace('市', '')
+                    // 策略1 直接找字典
+                    cityData = city_data[province][city][city]
+                    if (city == undefined) {
+                        // 不存在
+                        $("input").val(`${city}-${province}`)
+                        complete(city)
+                    } else {
+                        // 刷新
+                        refresh(cityData.AREAID)
+                        // 输入框
+                        $("input").val(`${city}-${province}`)
+                    }
+                }
+            });
+        }
+        getXYbyIP()
+        function complete(cityName) {
+            $.ajax({
+                type: "GET",
+                url: "http://toy1.weather.com.cn/search?cityname=" + cityName.split("-")[0],
+                dataType: "jsonp",
+                success: function (reponse) {
+                    clearSuggestion() // 再次清除
+                    max_li = (reponse.length > 6) ? 6 : reponse.length
+                    if (max_li == 0) {
+                        $(".autocomplete-suggestions ul").append($("<li><strong style='color: deeppink; font-size: 14px;'>未查询到" + cityName + "</strong></li>").css('text-align', 'center'))
+                    }
+                    for (var i = 0; i < max_li; i++) {
+                        let data = {}
+                        data = reponse[i]['ref'].split('~')
+                        let set = new Set([data[2], data[4], data[9]])
+                        inputStr = Array.from(set).join("-") // 转化为列表
+                        var Li = $("<li code='" + data[0] + "' index='" + i + "'" + ">" + inputStr + "</li>").click(
+                            function () {
+                                $("input").val(this.innerHTML)
+                                refresh($(this).attr('code'), clearSuggestion)
+                            }
+                        ).mouseenter(function () {
+                            $(".autocomplete-suggestions li[selected]").removeAttr('selected') // 清除原来
+                            $(this).attr('selected', 'selected') // 设为选区
+                        })
+                        $(".autocomplete-suggestions ul").append(Li)
+                    }
+                    $(".autocomplete-suggestions").show()
+                }
+            })
+        }
+
+        function max(arr) {
+            return Math.max.apply(null, arr);
+        }
+        function min(arr) {
+            return Math.min.apply(null, arr);
+        }
+        function drawOneLine(data, side) {
+            d = "M"
+            circleGroupStr = ""
+            arrPoints = new Array()
+            maxTem = max(data)
+            minTem = min(data)
+            for (var i = 0; i < data.length; i++) {
+                cx = String(i * 270 + 135)
+                cy = String(45 - (parseInt(data[i]) - minTem) / (maxTem - minTem) * 40)
+                arrPoints.push(cx + " " + cy)
+                circleGroupStr += `<circle cx="${cx}" cy="${cy}" r="4"/>\n`
+            }
+            d += arrPoints.join(" L ")
+            // 让起闭合 
+            d += (side == "LineTop") ? (" V 50 H 135") : (" V 0 H 135")
+            // 温度
+            $(".weather-boxes-window").append($('<svg class="' + side + '" height="50px" width="1620px">' +
+                '<path  d="' + d + '" stroke="black" fill="white" fill-opacity="0.23"/>\n' +
+                '<g stroke="white" stroke-width="2" fill="deeppink" fill-opacity="0.8">' + circleGroupStr + '</g>' +
+                '<tspan cx="135" cy="10">12</tspan>' + '</svg>'))
+        }
+        function drawOneCurve(data, side) {
+            d = "M 135 0"
+            padding = 5
+            arrStrPoints = new Array()
+            _arrStrPoints = new Array()
+            arrPoints = new Array()
+            maxTem = max(data)
+            minTem = min(data)
+            for (var i = 0; i < data.length; i++) {
+                cx = String(i * 270 + 135)
+                cy = String((50 - padding * 2) - (parseInt(data[i]) - minTem) / (maxTem - minTem) * (50 - padding * 2) + padding)
+                arrStrPoints.push(cx + " " + cy)
+                _arrStrPoints.push(cx + " " + ((side == "curveTop") ? "50" : "0"))
+                arrPoints.push([cx, cy])
+            }
+            var initd = String(["M 135 0 L", _arrStrPoints[0], "R"].concat(_arrStrPoints.slice(1))) + String((side == "curveTop") ? (" V 50 H 135") : (" V 0 H 135"))
+            var finald = String(["M 135 0 L", arrStrPoints[0], "R"].concat(arrStrPoints.slice(1))) + String((side == "curveTop") ? (" V 50 H 135") : (" V 0 H 135"))
+            // Raphael 库绘制R曲线
+            // 添加div容器
+            figure = $(`<div class="curve" id="${side}"></div>`)[0]
+            $(".weather-boxes-window").append(figure)
+            raphaelObj = Raphael(figure, 1620, 50)
+            let path = raphaelObj.path(initd).attr({
+                stroke: "transparent",
+                fill: "white",
+                "fill-opacity": "0.5"
+            })
+            // 添加点
+            let temPoints = []
+            let temY = []
+            initY = (side == "curveBottom") ? -10 : 60 // 偏移10防止露出来
+            for (var i in arrPoints) {
+                x = arrPoints[i][0]
+                y = Number(arrPoints[i][1])
+                let point = raphaelObj.circle(x, initY, 4).attr(
+                    {
+                        stroke: "none",
+                        fill: "white",
+                        "fill-opacity": "0.8"
+                    }
+                )
+                temPoints.push(point)
+                temY.push(y)
+                offset = 15
+                if (y <= 25) {
+                    y += offset
+                } else { y -= offset }
+                raphaelObj.text(x, y, `${data[i]}` + "℃").attr(
+                    {
+                        fill: "white",
+                        "font-size": "14px",
+                    }
+                )
+            }
+            animatePointsUp(temY, temPoints, path, finald, side)
+        }
+        function animatePointsUp(arrY, ele, path, finald, side) {
+            // 搜索点上升
+            // ele = $(`#${side}`).find('circle')
+            for (var i in ele) {
+                ele[i].animate({
+                    cy: arrY[i]
+                }, 332, "ease-in")
+            }
+            path.animate({
+                path: finald,
+            }, 332, "ease-out")
+
+        }
+        function animatePointsDown(arrY) {
+            // 搜索点下降
+
+        }
+        function drawLine(temJson) {
+            let dataDay = temJson['dayTem']
+            let dataNight = temJson['nightTem']
+            // 纯直线
+            // drawOneLine(dataDay, 'LineTop')
+            // drawOneLine(dataNight, 'LineBottom')
+            // 曲线
+            drawOneCurve(dataDay, 'curveTop')
+            drawOneCurve(dataNight, 'curveBottom')
+        }
+        /* 全局变量 */
+        var elementJson
+        function refresh(cityCode, callback = null) {
+            $.ajax({
+                type: "GET",
+                url: "https://service-6pwmc8ox-1256272652.bj.apigw.tencentcs.com/getWeatherInfo?cityCode=" + cityCode,
+                dataType: "jsonp",
+                jsonpCallback: "jQuery",
+                success: function (reponse) {
+                    elementJson = reponse;
+                    console.log(elementJson)
+                    var weatherInfoList = $(".weather-info");
+                    var day = $(".day-info .day");
+                    var week = $(".day-info .week");
+                    for (var i = 0; i < weatherInfoList.length; i++) {
+                        $(weatherInfoList[i]).empty() // 清空区域
+                        $(weatherInfoList[i]).attr('class', "weather-info " + elementJson[i]['sky'])
+                        $(elementJson[i]['wea'].replace('</span>/<i>', '</span>&nbsp;to&nbsp;<i>')).appendTo(weatherInfoList[i])
+                        day[i].innerHTML = elementJson[i]['day']
+                        week[i].innerHTML = elementJson[i]['week']
+                    }
+                    // 删除 figure和原本文字描述
+                    $(".tem").empty()
+                    $(".curve").remove()
+                    // 开始绘制 svg
+                    drawLine({
+                        dayTem: elementJson['temperate']['eventDay'].slice(1, -1),
+                        nightTem: elementJson['temperate']['eventNight'].slice(1, -1)
+                    })
+                    $("li:contains('气温')").click()
+                }
+            })
+            if (callback != null) callback()
+        }
+        /* 清楚并隐藏建议 */
+        function clearSuggestion() {
+            $(".autocomplete-suggestions").hide()
+            $(".autocomplete-suggestions ul").empty()
+        }
+        /* 文档加载完执行函数内容 */
+        var almanacData
+        /* 默认点击第一个 */
+        $('.weather-type li').click(function () {
+            offsetMenuBorder(this)
+        }
+        )
+        /* 鼠标放上去 */
+        $(".weather-box").hover(function () {
+            // $(".tem *").show()
+            $("svg path").animate({
+                "fill-opacity": "0"
+            }, 123, "linear")
+        }, $(".weather-box").onmouseout = function () {
+            // $(".tem *").hide()
+            $("svg path").animate({
+                "fill-opacity": "0.5"
+            }, 123, "linear")
+        })
+        /* 搜索图标绑定 */
+        $(".search img").bind('click', function () {
+            console.log('正在查询' + $("input").val());
+            var reg = /\d{,9}\W{0,1}/i
+            var cityCode = $("input").val()
+            if (!reg.test(cityCode) | (cityCode.length != 9)) {
+                complete(cityCode)
+            }
+            else {
+                refresh(cityCode);
+            }
+        })
+        /* 实现自动补全 */
+        // 回车弹出
+        var lastValue = ''
+        $(".autocomplete-suggestions").hide()
+        $("input").blur(function () {
+            setTimeout(clearSuggestion, 600)
+        })
+        $("input").bind('keydown', function (event) {
+            if (event.which == '40' | event.which == '38') {
+                return false
+            }
+        })
+        $("input").bind('keyup', function (event) {
+            var inputStr = $("input").val().split("  ")[0].replace(' ', '') // 防止用户输入空格策略
+            // 空值清楚
+            if (inputStr == '') {
+                clearSuggestion()
+            } else if (inputStr != lastValue) {
+                console.log(inputStr)
+                // 清除现存内容
+                clearSuggestion()
+                // 获取数据
+                complete(inputStr)
+                lastValue = inputStr
+            } else if (event.keyCode == "40" | event.keyCode == "38") {
+                // 判断是否有弹框选择
+                if (($(".autocomplete-suggestions").css('display') == "block") && ($(".autocomplete-suggestions li").length > 0)) {
+                    let selectLi = $(".autocomplete-suggestions li[selected]")
+                    if (selectLi.length) {
+                        step = (event.keyCode == "40") ? 1 : -1
+                        let currentIndex = Number(selectLi.attr('index'))
+                        selectLi.removeAttr('selected')
+                        let max_li = $(".autocomplete-suggestions li").length
+                        if ((currentIndex + step) < max_li & (currentIndex + step) >= 0) {
+                            nextIndex = currentIndex + step
+                        } else if ((currentIndex + step) >= max_li) {
+                            nextIndex = 0
+                        } else if ((currentIndex + step) < 0) {
+                            nextIndex = max_li - 1
+                        }
+                        $(".autocomplete-suggestions li[index=" + String(nextIndex) + "]").attr('selected', 'selected')
+                    } else { $(".autocomplete-suggestions li[index=0]").attr('selected', 'selected') }
+
+                }
+            } else if (event.keyCode == "13") { // 回车
+                // 选中元素
+                let selectLi = $(".autocomplete-suggestions li[selected]")[0]
+                console.log(selectLi)
+                console.log($(selectLi).attr('code'))
+                refresh($(selectLi).attr('code'))
+                $("input").val(selectLi.innerHTML)
+                clearSuggestion()
+            }
+        })
+        /* 老黄历 */
+        // Ajax请求数据 请求后全局变量被赋值
+        var today = new Date()
+        function getAndSetAlmanac(almanacDiv, dateList) {
+            // 格式化时间
+            console.log(dateList.join('-'))
+            $.ajax({
+                type: "GET",
+                url: "http://tools.2345.com/api/almanac/" + dateList[0] + "/" + dateList.join('-') + ".js",
+                dataType: "jsonp",
+                jsonpCallback: "Tools.almanac",
+                error: function (e) {
+                    setAlmanac(almanacDiv)
+                }
+            })
+        }
+        // 实现虚假 Tools ps：被迫这么些，因为要跨域，就得满足人家的条件
+        Tools = {
+            almanac: function (data) {
+                almanacData = data['day']
+                console.log(almanacData)
+            }
+        }
+        function setAlmanac(almanacDiv) {
+            // 添加主要部件：农历，图标
+            $('<div class="almanac-top"><h1>{yinli}</h1></div>\
+    <div class="almanac-bottom">\
+    <div class= "good-box" ><img src="img/yi.png" alt="宜">\
+    <ul></ul>\
+    </div>\
+    <div class="bad-box"><img src="img/ji.png" alt="忌">\
+    <ul></ul>\
+    </div>\
+    </div>'.replace('{yinli}', almanacData.yinli)).appendTo(almanacDiv)
+            // 宜
+            let goodList = almanacData['yi'].split(' ')
+            let badList = almanacData['ji'].split(' ')
+            for (var i = 0; i < goodList.length; i++) {
+                let goodThing = goodList[i]
+                if (huangli.hasOwnProperty(goodThing)) {
+                    tip = huangli[goodThing]
+                } else {
+                    tip = '顾名思义'
+                }
+                $(almanacDiv).find('.good-box ul').append($('<li title="' + tip + '">' + goodList[i] + '</li>'))
+            }
+            // 忌
+            for (var i = 0; i < badList.length; i++) {
+                let badThing = badList[i]
+                if (huangli.hasOwnProperty(badThing)) {
+                    tip = huangli[badThing]
+                } else {
+                    tip = '顾名思义'
+                }
+                $(almanacDiv).find('.bad-box ul').append($('<li title="' + tip + '">' + badList[i] + '</li>'))
+            }
+        }
+        // 点击日期弹出，绑定事件
+        let dayInfos = $(".day-info")
+        for (var i = 0; i < dayInfos.length; i++) {
+            // 绑定双击事件
+            $(dayInfos[i]).dblclick(function () {
+                // 用户双击日期
+                // 判断div下是否存在黄历box
+                var almanacDiv = $(this).prev().children('.almanac-box')
+                if (almanacDiv.length == 0) {
+                    $('.curve').hide()
+                    // 不存在则创建div 并更新almanacDiv的值
+                    almanacDiv = $('<div class="almanac-box"></div>').appendTo($(this).prev())[0]
+                    $(almanacDiv).animate({ bottom: '+=100%', height: '+=100%' }, 456)
+                    // 计算标签日期
+                    var year = today.getFullYear() // 年不会有大变化
+                    console.log(year)
+                    var day = $(this).children('span.day')[0].innerHTML
+                    var month = (Number(day) >= today.getDate()) ? (today.getMonth() + 1) : today.getMonth() + 2 // 月也不会有太大变化
+                    var dateList = [String(year), month >= 10 ? String(month) : ('0' + month), day >= 10 ? String(day) : ('0' + day)]
+                    getAndSetAlmanac(almanacDiv, dateList) // 获取
+                } else {
+                    $('.curve').show()
+                    // 有则去除
+                    almanacDiv = almanacDiv[0]
+                    $(almanacDiv).animate({ opacity: '0' }, 321, function () {
+                        almanacDiv.remove('.almanac-box')
+                    })
+                }
+            })
+        }
+        /* 绘图底部 */
+        function getDataMaxPointNumber(data) {
+            maxPointNumber = 0
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].length >= maxPointNumber) {
+                    maxPointNumber = data[i].length
+                }
+            }
+            return maxPointNumber
+        }
+        const maxPointNumber = 25
+        const pixelX = 911 * 2.5
+        const pixelY = 275
+        const padTopBottom = 80
+        const paper = Raphael("charts", pixelX, pixelY)
+        const liBox = $("#charts ul")
+        var padLeftRight
+        var temLine = null
+        var circles = []
+        var temTextList = []
+        const style = {
+            "气温": {
+                unit: "℃",
+                lineColor: "#f5c0c0",
+                pointColor: "#ff8585"
+            },
+            "空气质量": {
+                unit: "",
+                lineColor: "#94ebcd",
+                pointColor: "#16c79a"
+            },
+            "湿度": {
+                unit: "%",
+                lineColor: "#ffd66b",
+                pointColor: "#ff9d72"
+            },
+            "降水": {
+                unit: "mm",
+                lineColor: "#aee1e1",
+                pointColor: "#75cfb8"
+            }
+        }
+        // 注册颜色
+        if (window.CSS) {
+            if (CSS.registerProperty) {
+                CSS.registerProperty({
+                    name: "--end-color",
+                    syntax: "<color>",
+                    inherits: false,
+                    initialValue: "transparent"
+                })
+            }
+        }
+        /* 点击移动 */
+        function offsetMenuBorder(activeLi) {
+            // 获取标签相对ul位置
+            const pad = 12
+            const left = $(activeLi).position().left - pad
+            const width = $(activeLi)[0].getBoundingClientRect().width + pad * 2
+            const menuBorder = $(".slide")
+            if (menuBorder.css("display") == "none") {
+                // 不参在元素,创建
+                menuBorder.css({
+                    left: left + "px",
+                    width: width + "px"
+                })
+                menuBorder.show()
+            } else {
+                menuBorder.animate({
+                    left: left + "px",
+                    width: width + "px"
+                }, 333)
+            }
+            // 改变背景颜色
+            $(".weather-type ul").css({
+                "background-color": style[activeLi.innerHTML].pointColor,
+                "-webkit-transition": "background-color 1s"
+            })
+            // body动画
+            const element = document.getElementsByTagName('body')[0]
+            element.style.setProperty('--end-color', style[activeLi.innerHTML].pointColor)
+            $("body").css("cssText", `--end-color: ${style[activeLi.innerHTML].pointColor};`)
+        }
+        function drawDetailLine(X, Y, style) {
+            // {unit, lineColor, pointColor}
+            let maxY = max(Y)
+            let minY = min(Y)
+            let intervalX = pixelX / (X.length)
+            padLeftRight = intervalX / 2
+            let realPixelX = pixelX - padLeftRight * 2
+            let realPixelY = pixelY - padTopBottom * 2
+            let strXY = []
+            let pointXY = []
+            for (var i = 0; i < X.length; i++) {
+                pointX = Number(padLeftRight + intervalX * i)
+                if (maxY - minY) {
+                    pointY = pixelY - Number(padTopBottom + realPixelY * (Number(Y[i]) - minY) / (maxY - minY))
+                } else {
+                    pointY = pixelY - padTopBottom
+                }
+                strXY.push(
+                    `${pointX} ${pointY}`
+                )
+                pointXY.push([pointX, pointY])
+            }
+            let d = String(["M", strXY[0], "R"].concat(strXY.slice(1)))
+            if (temLine != null) {
+                temLine.animate({
+                    path: d,
+                    stroke: style.lineColor
+                }, 450)
+
+            } else {
+                temLine = paper.path(d).attr({
+                    stroke: "pink",
+                    "stroke-width": "4",
+                    "stroke-linecap": "round",
+                    "stroke-linejoin": "round",
+                })
+                // 创建点
+                var i = 0
+                while (i < maxPointNumber) {
+                    initPointX = Number(padLeftRight + intervalX * i)
+                    initPointY = Number(pixelY * 1.1) // 使它隐藏
+                    circle = paper.circle(
+                        initPointX, initPointY, 6
+                    ).attr({
+                        stroke: "none",
+                        fill: style.pointColor
+                    })
+                    circles.push(circle)
+                    i++
+                }
+            }
+            // 点动画
+            for (var i in Y) {
+                circles[i].animate({
+                    cx: pointXY[i][0],
+                    cy: pointXY[i][1],
+                    fill: style.pointColor
+                }, 450)
+            }
+            var i = Y.length
+            while (i < maxPointNumber) {
+                // initPointX = Number(pad + intervalX * i)
+                initPointY = Number(pixelY * 1.1) // 使它隐藏
+                circles[i].animate({
+                    // cx: initPointX,
+                    cy: initPointY,
+                    fill: style.pointColor
+                }, 450)
+                i++
+            }
+            // 添加标注
+            // 先隐藏
+            for (var i in temTextList) {
+                temTextList[i].animate({
+                    "fill-opacity": 0
+                }, 300)
+            }
+            setTimeout(function () {
+                $("#charts svg text").remove()
+            }, 300)
+            temTextList = []
+            setTimeout(function () {
+                for (var i in Y) {
+                    if (style.unit == "mm" && Y[i] == 0) {
+                        continue
+                    }
+                    e = 20
+                    temText = paper.text(pointXY[i][0], pointXY[i][1] + e, `${Y[i]}` + style.unit).attr({
+                        "font-size": "18px",
+                        "fill": style.pointColor,
+                        "fill-opacity": 0
+                    }).animate({
+                        "fill-opacity": 1
+                    }, 450, "linear")
+                    temTextList.push(temText)
+                }
+            }, 500)
+            // 绘制悬停标注
+            liBox.css({
+                width: pixelX + "px"
+            })
+            liBox.empty()
+            for (var i in X) {
+                let li = $(`<li>${X[i]}</li>`)
+                li.css({
+                    "background-color": style.lineColor
+                })
+                li.mouseover(function () {
+                    li.animate({
+                        opacity: 0.5,
+                        "padding-top": "20px"
+                    }, 350, "linear")
+                })
+                li.mouseout(function () {
+                    li.animate({
+                        opacity: 0,
+                        "padding-top": "0px"
+                    }, 350, "linear")
+                })
+                liBox.append(li)
+            }
+        }
+        var change = function (data, index) {
+            // current data
+            currentData = data[index]
+            let temX = []
+            let temY = []
+            for (var i in currentData) {
+                temY.push(currentData[i]['jb'])
+                temX.push(currentData[i]['jf'].slice(8))
+            }
+            drawDetailLine(temX, temY, style['气温'])
+
+        }
+        /* 绑定天气双击事件 */
+        $(".weather-info").bind("dblclick", (function () {
+            index = $(this).parent().index()
+            change(elementJson['hourData'], index)
+            offsetMenuBorder($("li:contains('气温')")[0])
+        }))
+        $("li:contains('气温')").click(function () {
+            change(elementJson['hourData'], 0)
+            $('.slide').attr('value', '气温')
+        })
+        /* 空气质量 */
+        $("li:contains('空气质量')").click(function () {
+            let airX = []
+            let airY = []
+            data = elementJson['observe24h_data']["od"]["od2"]
+            i = 24
+            while (i >= 0) {
+                airX.push(data[i]['od21'].slice())
+                airY.push(Number(data[i]['od28']))
+                i--
+            }
+            drawDetailLine(airX, airY, style['空气质量'])
+            $('.slide').attr('value', '空气质量')
+        })
+        /* 湿度 */
+        $("li:contains('湿度')").click(function () {
+            let humidityX = []
+            let humidityY = []
+            data = elementJson['observe24h_data']["od"]["od2"]
+            i = 24
+            while (i >= 0) {
+                humidityX.push(data[i]['od21'])
+                humidityY.push(Number(data[i]['od27']))
+                i--
+            }
+            drawDetailLine(humidityX, humidityY, style['湿度'])
+            $('.slide').attr('value', '湿度')
+        })
+        /* 降水 */
+        $("li:contains('降水')").click(function () {
+            let preX = []
+            let preY = []
+            data = elementJson['observe24h_data']["od"]["od2"]
+            i = 24
+            while (i >= 0) {
+                preX.push(data[i]['od21'])
+                preY.push(Number(data[i]['od26']))
+                i--
+            }
+            console.log(preY)
+            drawDetailLine(preX, preY, style['降水'])
+            $('.slide').attr('value', '降水')
+        })
+        // 鼠标滚动
+        $(".weather-boxes-window").niceScroll({
+            cursorcolor: "#ccc",//#CC0071 光标颜色
+            cursoropacitymax: 1, //改变不透明度非常光标处于活动状态（scrollabar“可见”状态），范围从1到0
+            touchbehavior: false, //使光标拖动滚动像在台式电脑触摸设备
+            cursorwidth: "8px", //像素光标的宽度
+            cursorborder: "0", // 游标边框css定义
+            cursorborderradius: "5px",//以像素为光标边界半径
+            autohidemode: true
+        })
+        $("#charts").niceScroll({
+            cursorcolor: "#ccc",//#CC0071 光标颜色
+            cursoropacitymax: 1, //改变不透明度非常光标处于活动状态（scrollabar“可见”状态），范围从1到0
+            touchbehavior: true, //使光标拖动滚动像在台式电脑触摸设备
+            cursorwidth: "5px", //像素光标的宽度
+            cursorborder: "0", // 游标边框css定义
+            cursorborderradius: "5px",//以像素为光标边界半径
+            autohidemode: true //是否隐藏滚动条
+        })
+        $("#charts").getNiceScroll().hide()
+</script>
 </html>
