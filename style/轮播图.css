@@ -1,0 +1,82 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.main-wrapper {
+    position: relative;
+    width: 1000px;
+    height: 500px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.img-wrapper {
+    width: 3000px;
+}
+li {
+    list-style-type: none;
+    float: left;
+}
+ul img {
+   width: 1000px;
+   height: 500px;
+}
+a[href] {
+    display: block;
+    height: 500px;
+}
+.prev, .next {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+}
+.prev {
+    left: 30px;
+    top: 50%;
+    margin-top: -25px;
+}
+.next {
+    right: 30px;
+    top: 50%;
+    margin-top: -25px;
+}
+.prev img, .next img {
+    height: 100%;
+    opacity: 0.5;
+}
+.prev img:hover, .next img:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.dot-wrapper {
+    width: 1000px;
+    height: 30px;
+    bottom: 30px;
+    position: absolute;
+}
+.dot-wrapper ul {
+    width: 60px;
+    height: 10px;
+    margin: 0 auto;
+    /* background-color: #ccc; */
+}
+.dot-wrapper ul li {
+    width: 10px;
+    height: 10px;
+    background-color: rgb(255, 255, 255);
+    float: left;
+    margin-right: 5px;
+    margin-left: 5px;
+    border-radius: 50%;
+    opacity: .47;
+}
+.dot-wrapper ul li:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+.dot-wrapper ul li:active {
+    background-color: rgb(6, 253, 113);
+}
+.dot-wrapper ul .active {
+    opacity: 1;
+    background-color: rgb(0, 255, 110);
+}
