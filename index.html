@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="style/beauty-others.css">
+    <script type="text/javascript" src="http://i.tq121.com.cn/j/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="js/huangli.js"></script>
+    <script type="text/javascript" src="js/raphael.min.js"></script>
+    <script type="text/javascript" src="https://j.i8tq.com/weather2020/search/city.js"></script>
+    <script type="text/javascript" src="http://i.tq121.com.cn/j/weather2017/jquery.nicescroll.min.js"></script>
+    <link rel="stylesheet" href="style/beauty.css">
+    <link rel="shortcut icon" href="https://iconfont.alicdn.com/s/aeb33dcf-5714-45f1-8d40-af4f66249308_origin.svg"
+        type="image/x-icon">
+</head>
+<body>
+    <div class="title">
+        <div class="inner-title">
+            <ul>
+                <li style='color:#fa744f;'>W</li>
+                <li style='color:#16817a;'>e</li>
+                <li style='color:#77d8d8;'>a</li>
+                <li style='color:#ff7272;'>t</li>
+                <li style='color:#ffb6b6;'>h</li>
+                <li style='color:#aacfcf;'>e</li>
+                <li style='color:#ffb385;'>r</li>
+            </ul>
+        </div> 
+    </div>
+    <div class="out-wrapper">
+        <div class="search">
+            <input placeholder="输入要查询的城市" type="text" id="autocomplete" value=''><span><img src="img/search.png" alt="search"></span>
+            <div class="autocomplete-suggestions">
+                <ul></ul>
+            </div>
+        </div>
+        <div class="weather-boxes-window">
+            <div class="weather-boxes">
+                <div class="weather-box">
+                    <div class="weather-info"><div class="almanac-box"></div></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-info"></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-info"></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-info"></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-info"></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+                <div class="weather-box">
+                    <div class="weather-info"></div>
+                    <div class="day-info"><span class="day">...</span><br /><span class="week"></span></div>
+                </div>
+            </div>
+        </div>
+    <div id="scroll-box">
+    </div>
+    </div>
+    <div class="detail-box">
+        <div class="weather-type">
+            <ul>
+                <div class="slide" value="气温"></div>
+                <li>气温</li>
+                <li>空气质量</li>
+                <li>湿度</li>
+                <li>降水</li>
+            </ul>
+        </div>
+        <div id="charts">
+            <ul></ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="js/beauty.js"></script>
+</html>
